@@ -97,7 +97,7 @@ python -m agent.deploy --chain studionet
 python -m agent.train --env genlayer --chain studionet --address 0x... --episodes 3
 ```
 
-Off-chain transport is the first-party [`genlayer-py`](https://github.com/genlayer-labs/genlayer-py) SDK (Python ≥ 3.12) - no Node bridge required.
+Off-chain transport is the first-party [`genlayer-py`](https://pypi.org/project/genlayer-py/) SDK (Python ≥ 3.12) - no Node bridge required.
 
 ## Contributing
 
