@@ -10,6 +10,10 @@ The agent never sees the rubric. It acts, gets scored by the LLM-consensus rewar
 
 Framed honestly: this is subjective-reward RL on-chain (RLAIF, judged by validator consensus). It is **not** open-ended self-modification. The agent optimizes a fixed, external, immutable objective. That constraint is a feature.
 
+## Live dashboard
+
+All four agents are visualized in one place: **[the GenLayer RL Demo Suite](https://luch91-org.github.io/genlayer-rl-demo-suite/)**. It is a pure reader of each agent's published `manifest.json` - watch the reward climb over training, step through a recorded episode, read the on-chain judge's verdict for each step, inspect why the agent chose each action, and read the deployed contract's live state. Source and setup: [`genlayer-rl-demo-suite`](https://github.com/luch91-org/genlayer-rl-demo-suite).
+
 ## The loop
 
 ```
