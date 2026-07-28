@@ -49,6 +49,22 @@ Each is a **fully independent, forkable repository**. All four are deployed and 
 
 > Studio is a shared sandbox that can be reset; if an address stops resolving, redeploy with `python -m agent.deploy --chain studionet` and substitute the fresh address.
 
+## How this repository is organized
+
+This repository is the umbrella repository. It holds the shared engineering spec, the organization profile, and the release notes. It coordinates the four domain repositories. It does not contain the RL code.
+
+This repository has no `contracts/`, `agent/`, or `tests/` folder. This is correct by design. There is no single domain here for that code to belong to. To put that code here would break the design.
+
+The RL system lives in the four domain repositories. Each domain repository is independent. Each domain repository contains its own code:
+
+- `contracts/` holds the Intelligent Contract. The contract defines the state, the actions, and the LLM-consensus reward.
+- `agent/` holds the off-chain Q-learning agent. The agent reads the state, sends actions, and learns from the reward.
+- `tests/` holds the contract tests and the agent tests.
+
+The demo suite is a separate repository. It reads the `manifest.json` file that each domain repository publishes. It does not hold RL code.
+
+Each part has a clear job. This repository documents and coordinates. The four domain repositories implement. The demo suite shows the results.
+
 ## Why GenLayer specifically
 
 - **Native LLM calls inside the contract.** The reward function is a prompt, not a formula.
