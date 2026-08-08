@@ -51,19 +51,20 @@ Each is a **fully independent, forkable repository**. All four are deployed and 
 
 ## How this repository is organized
 
-This repository is the umbrella repository. It holds the shared engineering spec, the organization profile, and the release notes. It coordinates the four domain repositories. It does not contain the RL code.
+This repository is a self-contained monorepo submission. It includes all four
+domains, their Intelligent Contracts, the off-chain Q-learning agent, the
+`genlayer-py` transport adapter, and tests for the complete read → write →
+reward → Q-table update path.
 
-This repository has no `contracts/`, `agent/`, or `tests/` folder. This is correct by design. There is no single domain here for that code to belong to. To put that code here would break the design.
+- `contracts/` contains one deployable contract per domain.
+- `agent/env.py` contains the local mock and live SDK environments.
+- `agent/q_learning.py` implements epsilon-greedy Q-learning and persistence.
+- `agent/train.py` is the runnable training entry point.
+- `tests/` verifies the agent and SDK-shaped integration path.
+- `policies/` contains reproducible trained Q-table artifacts for all four domains.
 
-The RL system lives in the four domain repositories. Each domain repository is independent. Each domain repository contains its own code:
-
-- `contracts/` holds the Intelligent Contract. The contract defines the state, the actions, and the LLM-consensus reward.
-- `agent/` holds the off-chain Q-learning agent. The agent reads the state, sends actions, and learns from the reward.
-- `tests/` holds the contract tests and the agent tests.
-
-The demo suite is a separate repository. It reads the `manifest.json` file that each domain repository publishes. It does not hold RL code.
-
-Each part has a clear job. This repository documents and coordinates. The four domain repositories implement. The demo suite shows the results.
+The older domain repositories and release notes remain useful references, but
+they are not required to run or evaluate this repository.
 
 ## Why GenLayer specifically
 
@@ -97,23 +98,26 @@ A `MockEnv` (instant, free) is the default for development and CI; a `GenLayerEn
 ## Getting started
 
 ```bash
-git clone https://github.com/luch91-org/genlayer-rl-crisis-negotiator.git
-cd genlayer-rl-crisis-negotiator
 python -m venv .venv && source .venv/bin/activate   # .venv\Scripts\activate on Windows
-pip install -r agent/requirements.txt
+pip install -r requirements.txt
 
-python -m agent.train --env mock --episodes 500     # free, instant
-python -m agent.plot                                # renders the learning curve
+pytest -q
+python -m agent.train --domain crisis-negotiator --env mock --episodes 500
+# Resume from a saved policy:
+python -m agent.train --domain crisis-negotiator --env mock --resume policies/crisis-negotiator-q_table.json --episodes 50
 ```
 
-Then deploy and run against the real chain:
+Then run the same agent against a deployed contract:
 
 ```bash
-python -m agent.deploy --chain studionet
-python -m agent.train --env genlayer --chain studionet --address 0x... --episodes 3
+pip install -e '.[chain]'
+python -m agent.train --domain crisis-negotiator --env genlayer --address 0x... --episodes 3
 ```
 
-Off-chain transport is the first-party [`genlayer-py`](https://pypi.org/project/genlayer-py/) SDK (Python ≥ 3.12) - no Node bridge required.
+The live adapter reads `get_state`, submits `take_action` through
+`genlayer-py`, waits for the receipt, reads `get_last_reward`, and reads the
+next state. Repeat `--domain` for the other three domains. No Node bridge is
+required.
 
 ## Contributing
 
