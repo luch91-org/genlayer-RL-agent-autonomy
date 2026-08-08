@@ -38,16 +38,21 @@ The contract is the scorekeeper. The agent is the student. The student keeps gue
 
 ## The four domains
 
-Each is a **fully independent, forkable repository**. All four are deployed and verified live on the hosted GenLayer Studio network (`studionet`), and each is tagged `v0.1.0-alpha` with a trained `q_table.json` attached to its release.
+Each domain is included in this self-contained repository. All four contracts
+are deployed and verified live on the hosted GenLayer Studio network
+(`studionet`); the exact addresses are recorded in [`deployments.json`](deployments.json).
 
-| Repository | Domain | The agent learns to | Live on studionet |
+| Contract | Domain | The agent learns to | Verified Studionet address |
 |---|---|---|---|
-| [`genlayer-rl-crisis-negotiator`](https://github.com/luch91-org/genlayer-rl-crisis-negotiator) | Disaster response | Dispatch drones, ambulances, and supplies to critical zones without wasting capacity | [`0xE0CB…5220`](https://github.com/luch91-org/genlayer-rl-crisis-negotiator#verified-live-deployment) |
-| [`genlayer-rl-protocol-immunologist`](https://github.com/luch91-org/genlayer-rl-protocol-immunologist) | DAO treasury defense | Pause, rotate signers, and hedge to preserve capital - but only when a threat is actually trending | [`0x4213…55dd`](https://github.com/luch91-org/genlayer-rl-protocol-immunologist#verified-live-deployment) |
-| [`genlayer-rl-scientific-heretic`](https://github.com/luch91-org/genlayer-rl-scientific-heretic) | Hypothesis generation | Propose novel, falsifiable, plausible hypotheses a peer reviewer would find interesting | [`0xDd16…35F6`](https://github.com/luch91-org/genlayer-rl-scientific-heretic#verified-live-deployment) |
-| [`genlayer-rl-diplomatic-interpreter`](https://github.com/luch91-org/genlayer-rl-diplomatic-interpreter) | Cross-community mediation | Draft compromises that lower polarization and raise the odds of agreement on both sides | [`0xA5cf…EE15`](https://github.com/luch91-org/genlayer-rl-diplomatic-interpreter#verified-live-deployment) |
+| [`contracts/crisis_negotiator.py`](contracts/crisis_negotiator.py) | Disaster response | Dispatch drones, ambulances, and supplies to critical zones without wasting capacity | `0x9d718F8AAb76517D14917483e1c9Cbd6267aDe24` |
+| [`contracts/protocol_immunologist.py`](contracts/protocol_immunologist.py) | DAO treasury defense | Pause, rotate signers, and hedge to preserve capital - but only when a threat is actually trending | `0xC23006cAF6D3b25288F77988592675Bd5439Ed35` |
+| [`contracts/scientific_heretic.py`](contracts/scientific_heretic.py) | Hypothesis generation | Propose novel, falsifiable, plausible hypotheses a peer reviewer would find interesting | `0x7847A35eA8C3Bb887C20E5B64BF035e99abd4B16` |
+| [`contracts/diplomatic_interpreter.py`](contracts/diplomatic_interpreter.py) | Cross-community mediation | Draft compromises that lower polarization and raise the odds of agreement on both sides | `0xA47132D18B0eD7588426B6234f74d4A15170a4e0` |
 
-> Studio is a shared sandbox that can be reset; if an address stops resolving, redeploy with `python -m agent.deploy --chain studionet` and substitute the fresh address.
+> Studio is a shared sandbox that can be reset. If an address stops resolving,
+> redeploy the corresponding contract with `genlayer deploy --contract
+> contracts/<domain>.py --rpc https://studio.genlayer.com/api` and update
+> `deployments.json` only after verifying the new address with `get_state`.
 
 ## How this repository is organized
 
@@ -62,6 +67,9 @@ reward → Q-table update path.
 - `agent/train.py` is the runnable training entry point.
 - `tests/` verifies the agent and SDK-shaped integration path.
 - `policies/` contains reproducible trained Q-table artifacts for all four domains.
+- `manifests/` contains demo-suite-compatible metadata, mock learning curves,
+  and explicitly labeled mock replays. `deployments.json` records only
+  contracts that were accepted by Studionet and verified with `get_state()`.
 
 The older domain repositories and release notes remain useful references, but
 they are not required to run or evaluate this repository.
@@ -118,6 +126,16 @@ The live adapter reads `get_state`, submits `take_action` through
 `genlayer-py`, waits for the receipt, reads `get_last_reward`, and reads the
 next state. Repeat `--domain` for the other three domains. No Node bridge is
 required.
+
+Export or refresh the truthful dashboard manifests after training or a new
+deployment:
+
+```bash
+python scripts/export_manifests.py
+```
+
+Mock replay steps are marked `illustrative` and contain no fabricated
+transaction hashes, validator votes, or live receipts.
 
 ## Contributing
 

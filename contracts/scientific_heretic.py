@@ -3,9 +3,9 @@ from genlayer import *
 
 
 class ScientificHeretic(gl.Contract):
-    state: int
-    last_reward: int
-    step_count: int
+    state: u8
+    last_reward: u8
+    step_count: u32
 
     def __init__(self):
         self.state = 0
