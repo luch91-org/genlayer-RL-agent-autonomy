@@ -1,7 +1,7 @@
 {
   "chain": "studionet",
   "rpc": "https://studio.genlayer.com/api",
-  "explorer": "https://genlayer-explorer.vercel.app",
+  "explorer": "https://explorer-studio.genlayer.com",
   "contracts": {
     "crisis": {
       "name": "Crisis Negotiator",
